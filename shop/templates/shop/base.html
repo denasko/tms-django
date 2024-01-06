@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if article.title %}
+    <title>{{article.title}}</title>
+    {% else %}
+        <title>{{title}}</title>
+    {% endif %}
+
+</head>
+<body>
+<ul>
+
+    <li><a href="{% url 'shop:index' %}">Main page</a></li>
+    <li><a href="{% url 'shop:about' %}">About site</a></li>
+    <li><a href="{% url 'shop:add_product' %}">Add new product</a></li>
+    <li><a href="{% url 'shop:feedback' %}">Feedback</a></li>
+    <li><a href="{% url 'shop:login' %}">Login</a></li>
+
+</ul>
+
+{% block content%} {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'articles/base.html' %}
+{% block content%}
+<h1>About {{article.title}}</h1>
+<br>
+<h3>{{article.content}}</h3>
+<p>Author: {{article.author}}</p>
+<p>like: {{article.like_count}}</p>
+    <form action="{% url 'articles:like' article.id %}" method="post">
+            {% csrf_token %}
+    <input type="submit" value="Like: {{article.like_count}}"/>
+    </form>
+{% endblock %}

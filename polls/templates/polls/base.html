@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Polls APP {% endblock %}</title>
+</head>
+<body>
+    <ul>
+        <li><a href="{% url 'polls:index' %}"> Main page </a> </li>
+        <li><a href="{% url 'polls:create_question' %}"> Create new question </a> </li>
+        <li><a href="{% url 'polls:about' %}"> About site </a> </li>
+        <li><a href="{% url 'polls:create_feedback' %}"> Feedback </a> </li>
+
+    {% for i in menu %}
+        <li><a href=" {{i}} "> {{i}} </a></li>
+    {% endfor %}
+    </ul>
+
+        {% block body %} {% endblock %}
+</body>
+</html>

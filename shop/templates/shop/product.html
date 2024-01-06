@@ -1,0 +1,15 @@
+{% extends 'shop/base.html' %}
+{% block content%}
+<h1>Name: {{ product.product_name }}</h1>
+<h3>Category: <a href="{% url 'shop:category' product.category %}">{{product.category}}</a></h3>
+<h3>Description: {{ product.description }}</h3>
+{% if sale != 0%}
+    <h4>Old price: {{ product.price }} rub.</h4>
+    <h3>New price: {{ sale }} rub. !!!</h3>
+{% else %}
+    <h3>Price: {{product.price}} rub.</h3>
+{% endif %}
+
+
+{% endblock %}
+

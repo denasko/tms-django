@@ -1,0 +1,15 @@
+{% extends 'polls/base.html' %}
+
+{% block title%} Feedback {% endblock %}
+<body>
+    {% block body %}
+
+    <h1>Create your feedback:</h1>
+    <form action="{% url 'polls:create_feedback' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create"/>
+    </form>
+
+    {% endblock %}
+</body>
