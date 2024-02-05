@@ -1,6 +1,7 @@
 {% extends 'shop/base.html' %}
+
 {% block content%}
-<h1> {{title}}</h1>
+<h1> {{title|title}}</h1>
 
 <ul>
     {% for cat in category %}
@@ -8,10 +9,10 @@
         {% if not forloop.first %}
         <hr>
         {% endif %}
-        <h2><a href="{% url 'shop:category' cat %}"> {{ cat }}</a></h2>
+        <h2><a href="{% url 'shop:category' cat %}"> {{ cat|title }}</a></h2>
         {% for product in products %}
             {% if cat == product.category %}
-            <h3><a href="{% url 'shop:product' product.id %}"> {{ product.product_name }} </a></h3>
+            <h3><a href="{% url 'shop:product' product.id %}"> {{ product.product_name|title }} </a></h3>
             <p>{{ product.description|truncatewords:20 }}</p>
         {% endif %}
 

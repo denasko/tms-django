@@ -1,0 +1,16 @@
+.centered-text {
+    text-align: center;
+    margin: 0 auto;
+    width: 80%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+button {
+  flex: 1;
+  margin: 0 5px;
+}

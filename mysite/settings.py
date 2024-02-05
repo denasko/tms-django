@@ -25,13 +25,16 @@ SECRET_KEY = 'django-insecure-*#dt48zoq2eg!sv(eo(gz!&*anok*ifrlwa)-6*vlry709!=k2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 ATOMIC_REQUESTS = True
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
+    'api',
+    'rest_framework',
     'polls',
     'shop',
     'articles',
@@ -44,6 +47,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,7 +63,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'mysite.context_processors.base_template_context_processor',
             ],
         },
     },
@@ -130,3 +136,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if not DEBUG:
+    CACHES = {
+       "default": {
+           "BACKEND": "django.core.cache.backends.redis.RedisCache",
+           "LOCATION": "redis://127.0.0.1:6379",
+       }
+    }
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
+

@@ -10,6 +10,14 @@
         <li><a href="{% url 'polls:create_question' %}"> Create new question </a> </li>
         <li><a href="{% url 'polls:about' %}"> About site </a> </li>
         <li><a href="{% url 'polls:create_feedback' %}"> Feedback </a> </li>
+        {% if user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Logout" class="btn btn-danger"/>
+    </form>
+{% else %}
+    <li><a href="{% url 'login' %}" class="btn btn-info">Login</a></li>
+{% endif %}
 
     {% for i in menu %}
         <li><a href=" {{i}} "> {{i}} </a></li>
@@ -17,5 +25,6 @@
     </ul>
 
         {% block body %} {% endblock %}
+
 </body>
 </html>

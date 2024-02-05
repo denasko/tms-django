@@ -1,0 +1,54 @@
+{% extends 'shop/base.html' %}
+{% block title %}Корзина{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <h2>Моя корзина</h2>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Продукт</th>
+                <th scope="col">Цена</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in entries %}
+                <tr>
+                    <td>
+                        <a href="{% url 'shop:product' entry.product.id %}">{{ entry.product.product_name }}</a>
+                    </td>
+                    <td>{{ entry.product.price }} руб.</td>
+                    <td>
+                        <form class="form-inline" action="{% url 'shop:update_quantity' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                            <input type="number" name="quantity" value="{{ entry.count }}" min="0" class="form-control">
+                            <button type="submit" class="btn btn-primary ml-2">Обновить</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="form-inline" action="{% url 'shop:remove_entry' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="total">Сумма заказа: <span id="totalAmount" class="font-weight-bold">{{ total_amount }} руб.</span>
+        </p>
+        <form class="form-inline" action="{% url 'shop:process_order' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Оформить заказ</button>
+        </form>
+        <form class="form-inline" action="{% url 'shop:clear_cart' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Очистить заказ</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,10 +1,13 @@
 {% extends 'shop/base.html' %}
+{% block title %} {{category}} {% endblock %}
 {% block content%}
+
+<h2>All products in category: <a href="{% url 'shop:category' category %}">{{ category|title }}</a></h2>
 
 <ul>
     <li>
         {% for product in products %}
-            <h3><a href="{% url 'shop:product' product.id %}"> {{ product.product_name }} </a></h3>
+            <h3><a href="{% url 'shop:product' product.id %}"> {{ product.product_name|title }} </a></h3>
             <p>{{ product.description|truncatewords:20 }}</p>
     </li>
 
