@@ -31,7 +31,7 @@ class Product(models.Model):
 
 class OrderEntry(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_entry')
-    count = models.IntegerField(default=0, blank=False)
+    count = models.IntegerField(default=1, blank=False)
     order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_entries')
     objects: QuerySet
 
@@ -46,8 +46,11 @@ class Order(models.Model):
         DELIVERED = "DL", _("DELIVERED")
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE, related_name='orders')
-    status = models.CharField(max_length=2, choices=Status, default=Status.INITIAL)
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.INITIAL)
     objects: QuerySet
+
+    def __str__(self):
+        return f"Order: {self.pk} - {self.profile.user.username}"
 
 
 class Profile(models.Model):

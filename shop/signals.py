@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_init, pre_save, post_save, pre_init
 from django.dispatch import receiver
 
 from .models import Order, Profile

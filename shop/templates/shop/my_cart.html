@@ -1,16 +1,16 @@
 {% extends 'shop/base.html' %}
-{% block title %}Корзина{% endblock %}
+{% block title %}Shopping cart{% endblock %}
 {% block content %}
     <div class="container mt-4">
-        <h2>Моя корзина</h2>
+        <h2>My shopping cart</h2>
 
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Продукт</th>
-                <th scope="col">Цена</th>
-                <th scope="col">Количество</th>
-                <th scope="col">Действия</th>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Count</th>
+                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -25,14 +25,14 @@
                             {% csrf_token %}
                             <input type="hidden" name="entry_id" value="{{ entry.id }}">
                             <input type="number" name="quantity" value="{{ entry.count }}" min="0" class="form-control">
-                            <button type="submit" class="btn btn-primary ml-2">Обновить</button>
+                            <button type="submit" class="btn btn-primary ml-2">Update</button>
                         </form>
                     </td>
                     <td>
                         <form class="form-inline" action="{% url 'shop:remove_entry' %}" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="entry_id" value="{{ entry.id }}">
-                            <button type="submit" class="btn btn-danger">Удалить</button>
+                            <button type="submit" class="btn btn-danger">Remove</button>
                         </form>
                     </td>
                 </tr>
@@ -40,15 +40,15 @@
             </tbody>
         </table>
 
-        <p class="total">Сумма заказа: <span id="totalAmount" class="font-weight-bold">{{ total_amount }} руб.</span>
+        <p class="total">Total price: <span id="totalAmount" class="font-weight-bold">{{ total_amount }} руб.</span>
         </p>
         <form class="form-inline" action="{% url 'shop:process_order' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-success">Оформить заказ</button>
+            <button type="submit" class="btn btn-success">Create order</button>
         </form>
         <form class="form-inline" action="{% url 'shop:clear_cart' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-warning">Очистить заказ</button>
+            <button type="submit" class="btn btn-warning">Clear order</button>
         </form>
     </div>
 {% endblock %}

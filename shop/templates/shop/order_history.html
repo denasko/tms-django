@@ -1,0 +1,71 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}История заказов{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">История заказов</h1>
+
+    <ul class="list-group">
+        {% for order in orders %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Заказ №{{ order.id }} - Статус: {{ order.status }}</span>
+                    <div class="product-names mt-2">
+                        <ul class="list-unstyled">
+                        {% for entry in order.entries.all %}
+                            <li>
+                                <a href="{% url 'shop:product' entry.product.id %}"
+                                   class="text-info text-decoration-none">{{ entry.product.name }}</a>
+                                <span class="ml-2 badge bg-warning"> Кол-во: {{ entry.count }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    <span class="badge bg-primary">Общая сумма: {{ order.total_amount }} руб.</span>
+                    <span class="badge bg-secondary">Количество товаров: {{ order.total_quantity }}</span>
+
+                    <form method="post" action="{% url 'shop:repeat_order' order.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Повторить заказ</button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination">
+            {% if orders.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Страница {{ orders.number }} из {{ orders.paginator.num_pages }}</span>
+            </li>
+
+            {% if orders.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

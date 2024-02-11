@@ -24,10 +24,17 @@
  <div>
      <form method="post" action="{% url 'shop:add_to_cart' product.id %}">
          {% csrf_token %}
-         <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+         <button type="submit" class="btn btn-primary" data-placement="top" title="Click to add to your cart">To cart</button>
      </form>
-     <a class="btn btn-warning m-lg-2 " href="{% url 'shop:my_cart' %}">Прейти в корзину</a>
  </div>
+{% endif %}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <h3><li>{{ message }}</li></h3>
+        {% endfor %}
+    </ul>
 {% endif %}
 
 

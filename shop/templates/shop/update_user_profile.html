@@ -1,0 +1,22 @@
+{% extends 'shop/base.html' %}
+
+{% block title %} Changed {% endblock %}
+
+{% block content %}
+<h2>Обновление профиля</h2>
+<form method="post" action="{% url 'shop:update_profile' %}">
+    {% csrf_token %}
+    <label for="first_name">Имя:</label>
+    <input type="text" id="first_name" name="first_name" value="{{ user_profile.first_name }}"><br>
+
+    <label for="last_name">Фамилия:</label>
+    <input type="text" id="last_name" name="last_name" value="{{ user_profile.last_name }}"><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{ user_profile.email }}"><br>
+
+    <!-- Добавьте другие поля профиля, которые вы хотите обновлять -->
+
+    <button type="submit">Сохранить изменения</button>
+</form>
+{% endblock %}

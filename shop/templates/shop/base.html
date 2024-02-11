@@ -22,6 +22,9 @@
       {% if user.is_authenticated %}
         {% csrf_token %}
         <input type="submit" value="Logout" class="btn btn-danger" formaction="{% url 'logout' %}?next={{ request.path }}" formmethod="post" data-toggle="tooltip" data-placement="top" title="Click to logout"/>
+        <a class="btn btn-warning m-lg-2 " href="{% url 'shop:my_cart' %}" data-toggle="tooltip" data-placement="top" title="Click to visit page whith your shopping cart">My shopping cart</a>
+        <button type="submit" class="btn btn-primary ml-2" formaction="{% url 'shop:user_profile' %}" data-toggle="tooltip" data-placement="top" title="Click to visit your profile">Profile</button>
+        <button type="submit" class="btn btn-success" formaction="{% url 'shop:order_history' %}" data-toggle="tooltip" data-placement="top" title="Click to visit page whith history about your orders">Order history</button>
     </form>
       {% else %}
     {% csrf_token %}
