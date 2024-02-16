@@ -29,6 +29,27 @@
  </div>
 {% endif %}
 
+{% if user.is_authenticated %}
+    <form method="post" action="{% url 'shop:add_like' product.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-success">Like: {{ likes }}</button>
+    </form>
+{% endif %}
+
+
+{% for comment in comments %}
+    <div>
+        <p>{{ comment.text }}</p>
+        <p>{{ comment.author.username }}, {{ comment.created_at }}</p>
+    </div>
+{% endfor %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Добавить комментарий</button>
+</form>
+
 {% if messages %}
     <ul class="messages">
         {% for message in messages %}

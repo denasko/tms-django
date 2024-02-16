@@ -20,5 +20,6 @@ urlpatterns = [
     path('order_history/', views.order_history, name='order_history'),
     path('update_profile/', views.update_profile, name='update_profile'),
     path('my_cart/repeat_order/<int:order_id>/', views.repeat_order, name='repeat_order'),
+    path('like/<int:product_id>/', views.add_like, name='add_like'),
 
 ]

@@ -3,13 +3,13 @@
 {% block title %} Changed {% endblock %}
 
 {% block content %}
-<h2>Обновление профиля</h2>
+<h2>Profile update</h2>
 <form method="post" action="{% url 'shop:update_profile' %}">
     {% csrf_token %}
-    <label for="first_name">Имя:</label>
+    <label for="first_name">Name:</label>
     <input type="text" id="first_name" name="first_name" value="{{ user_profile.first_name }}"><br>
 
-    <label for="last_name">Фамилия:</label>
+    <label for="last_name">Surname:</label>
     <input type="text" id="last_name" name="last_name" value="{{ user_profile.last_name }}"><br>
 
     <label for="email">Email:</label>
@@ -17,6 +17,6 @@
 
     <!-- Добавьте другие поля профиля, которые вы хотите обновлять -->
 
-    <button type="submit">Сохранить изменения</button>
+    <button type="submit">Save changes</button>
 </form>
 {% endblock %}

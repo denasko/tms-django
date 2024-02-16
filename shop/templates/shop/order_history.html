@@ -1,33 +1,33 @@
 {% extends 'shop/base.html' %}
 
-{% block title %}История заказов{% endblock %}
+{% block title %}Order history{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">История заказов</h1>
+    <h1 class="mb-4">Order history</h1>
 
     <ul class="list-group">
         {% for order in orders %}
             <li class="list-group-item">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">Заказ №{{ order.id }} - Статус: {{ order.status }}</span>
+                    <span class="fw-bold">Order №{{ order.id }} - Status: {{ order.status }}</span>
                     <div class="product-names mt-2">
                         <ul class="list-unstyled">
                         {% for entry in order.entries.all %}
                             <li>
                                 <a href="{% url 'shop:product' entry.product.id %}"
                                    class="text-info text-decoration-none">{{ entry.product.name }}</a>
-                                <span class="ml-2 badge bg-warning"> Кол-во: {{ entry.count }}</span>
+                                <span class="ml-2 badge bg-warning">Count: {{ entry.count }}</span>
                             </li>
                         {% endfor %}
                     </ul>
                     </div>
-                    <span class="badge bg-primary">Общая сумма: {{ order.total_amount }} руб.</span>
-                    <span class="badge bg-secondary">Количество товаров: {{ order.total_quantity }}</span>
+                    <span class="badge bg-primary">Total amount: {{ order.total_amount }} руб.</span>
+                    <span class="badge bg-secondary">Quantity of goods: {{ order.total_quantity }}</span>
 
                     <form method="post" action="{% url 'shop:repeat_order' order.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-success">Повторить заказ</button>
+                        <button type="submit" class="btn btn-success">Repeat order</button>
                     </form>
                 </div>
             </li>
@@ -50,7 +50,7 @@
             {% endif %}
 
             <li class="page-item disabled">
-                <span class="page-link">Страница {{ orders.number }} из {{ orders.paginator.num_pages }}</span>
+                <span class="page-link">Page {{ orders.number }} of {{ orders.paginator.num_pages }}</span>
             </li>
 
             {% if orders.has_next %}

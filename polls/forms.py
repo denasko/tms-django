@@ -9,5 +9,14 @@ class QuestionForm(forms.Form):
     choices = forms.CharField(label='Choices', widget=forms.Textarea)
 
 
+# class FeedbackForm(forms.Form):
+#   feedback_text = forms.CharField(label='Inter your feedback', widget=forms.Textarea)
+
 class FeedbackForm(forms.Form):
-    feedback_text = forms.CharField(label='Inter your feedback', widget=forms.Textarea)
+    feedback_text = forms.CharField(
+        label='Share your thoughts about our site:',
+        widget=forms.Textarea(attrs={'placeholder': 'We value your feedback!'}),
+        required=False,
+        max_length=500,
+        help_text='Your feedback is important to us. Maximum 500 characters.'
+    )

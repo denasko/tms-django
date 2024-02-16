@@ -5,43 +5,80 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
-from shop.forms import RegistrationForm, UserUpdateForm
 
-from shop.models import Product, Category, Order, OrderEntry, Profile
+from shop.forms import UserUpdateForm, FeedbackForm, CommentForm
+from shop.models import Product, Category, Order, OrderEntry, Profile, Like, Comment
 
 
 @cache_page(3)
 def index(request: HttpResponse):
-    products = Product.objects.all().order_by('category')
+    """
+    :param request:
+    :return: Main page with all category and all products where products==is_published
+    """
+    products = Product.objects.filter(is_published=True).order_by('category')
     category = Category.objects.all()
-    data = {'title': 'main page',
-            'products': products,
-            'category': category
-            }
+    data = {
+        'products': products,
+        'category': category
+    }
     return render(request, 'shop/index.html', context=data)
 
 
-def show_product(request: HttpResponse, product_id: int) -> str:
+def show_product(request: HttpResponse, product_id: Product.pk) -> str:
+    """
+    :param request:
+    :param product_id: Product.product.pk
+    :return: Page with product.pk
+    """
     product = get_object_or_404(Product, pk=product_id)
+    likes = Like.objects.filter(post=product).count()
     new_price = 0
     if product.sale != 0:
         new_price: float = product.price / 100 * (100 - product.sale)
-    data = {'product': product,
-            'new_price': round(new_price, 2),
-            'sale': product.sale}
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            author = form.cleaned_data['author']
+            text = form.cleaned_data['text']
+            Comment.objects.create(product=product, author=author, text=text)
+
+    comments = Comment.objects.filter(product=product)
+
+    data = {
+        'product': product,
+        'new_price': round(new_price, 2),
+        'sale': product.sale,
+        'likes': likes,
+        'comments': comments,
+        'comment_form': CommentForm()
+    }
     return render(request, 'shop/product.html', context=data)
 
 
-def show_category(request: HttpResponse, category_name: str) -> str:
+def show_category(request: HttpResponse, category_name: Category.category_name) -> str:
+    """
+    :param request:
+    :param category_name: Category.category_name
+    :return: Page with all category on database
+    """
     category = get_object_or_404(Category, category_name=category_name)
     products = Product.objects.filter(category_id=category.pk)
-    data = {'products': products,
-            'category': category}
+    data = {
+        'products': products,
+        'category': category
+    }
     return render(request, 'shop/category.html', context=data)
 
 
 @login_required
 def add_to_cart(request: HttpResponse, product_id: Product.pk) -> str:
+    """
+    :param request:
+    :param product_id: Product.pk
+    :return: Add product in shopping cart
+    """
     product = get_object_or_404(Product, id=product_id)
     profile = Profile.objects.get(user=request.user)
     if not profile.shopping_cart:
@@ -60,6 +97,10 @@ def add_to_cart(request: HttpResponse, product_id: Product.pk) -> str:
 
 @login_required
 def my_cart(request: HttpResponse) -> str:
+    """
+    :param request:
+    :return: Page with shopping cart and goods in them
+    """
     categories = Category.objects.all()
     profile = Profile.objects.get(user=request.user)
     order: Order = Order.objects.filter(profile=profile, status=Order.Status.INITIAL).first()
@@ -81,7 +122,8 @@ def my_cart(request: HttpResponse) -> str:
 @login_required
 def update_quantity(request: HttpResponse) -> str:
     """
-        Обновляет количество продукта в корзине пользователя.
+    :param request:
+    :return: Updates the amount of product in the user's shopping cart.
     """
     entry_id = request.POST.get('entry_id')
     quantity = request.POST.get('quantity')
@@ -94,7 +136,8 @@ def update_quantity(request: HttpResponse) -> str:
 @login_required
 def remove_entry(request: HttpResponse) -> str:
     """
-        Удаляет запись о продукте из корзины пользователя.
+    :param request:
+    :return: Removes a product record from the user's shopping cart.
     """
     entry_id = request.POST.get('entry_id')
     entry = OrderEntry.objects.get(id=entry_id)
@@ -105,7 +148,8 @@ def remove_entry(request: HttpResponse) -> str:
 @login_required
 def clear_cart(request: HttpResponse) -> str:
     """
-        Очищает все продукты из корзины пользователя.
+    :param request:
+    :return: Clears all products from the user's shopping cart.
     """
     profile = Profile.objects.get(user=request.user)
     order = Order.objects.filter(profile=profile, status=Order.Status.INITIAL).first()
@@ -117,7 +161,8 @@ def clear_cart(request: HttpResponse) -> str:
 @login_required
 def process_order(request: HttpResponse) -> str:
     """
-    Обрабатывает заказ пользователя, создавая новый заказ с продуктами из корзины покупок.
+    :param request:
+    :return: Processes the user's order by creating a new order with products from the shopping cart.
     """
     if request.method == 'POST':
         profile = Profile.objects.get(user=request.user)
@@ -136,9 +181,10 @@ def process_order(request: HttpResponse) -> str:
 
 
 @login_required
-def user_profile(request):
+def user_profile(request: HttpResponse) -> str:
     """
-        Отображает информацию о профиле пользователя и последние заказы.
+    :param request:
+    :return: Page with history about user orders.
     """
     categories = Category.objects.all()
     user = request.user
@@ -160,9 +206,10 @@ def user_profile(request):
 
 
 @login_required
-def order_history(request):
+def order_history(request: HttpResponse) -> str:
     """
-        Отображает историю заказов пользователя с пагинацией.
+    :param request:
+    :return: Page with order history with pagination.
     """
     categories = Category.objects.all()
     orders = Order.objects.filter(profile=request.user.profile).order_by('-id')
@@ -187,27 +234,36 @@ def order_history(request):
 
 
 @login_required
-def update_profile(request):
+def update_profile(request: HttpResponse) -> str:
+    """
+    :param request:
+    :return: Update user profile and go to page with Profile or page with form for update profile.
+    """
     categories = Category.objects.all()
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
 
         if user_form.is_valid():
             user_form.save()
-            messages.success(request, 'Ваш профиль успешно обновлен!')
-            return redirect('shop:user_profile')
+            messages.success(request, 'Your profile has been successfully updated!')
+        return redirect('shop:user_profile')
 
     else:
         user_form = UserUpdateForm(instance=request.user)
+        data = {
+            'user_form': user_form,
+            'categories': categories
+        }
 
-    return render(request, 'shop/update_user_profile.html',
-                  {'user_form': user_form, 'categories': categories})
+    return render(request, 'shop/update_user_profile.html', context=data)
 
 
 @login_required
-def repeat_order(request, order_id):
+def repeat_order(request: HttpResponse, order_id: Order.pk):
     """
-        Обрабатывает заказ пользователя, создавая новый заказ с продуктами из корзины покупок.
+    :param request:
+    :param order_id: Order.pk
+    :return: Page with shopping cart.
     """
     order = get_object_or_404(Order, id=order_id, profile=request.user.profile)
     OrderEntry.objects.filter(order=request.user.profile.shopping_cart).delete()
@@ -218,24 +274,49 @@ def repeat_order(request, order_id):
 
 
 def about(request: HttpResponse) -> str:
+    """
+    :param request:
+    :return: Page About site.
+    """
     return render(request, 'shop/about.html')
 
 
-def add_product(request) -> str:
+def add_product(request: HttpResponse) -> str:
     products = Product.objects.all().order_by('category')
     category = Category.objects.all()
-    data = {'title': 'main page',
-            'products': products,
-            'category': category
-            }
+    data = {
+        'products': products,
+        'category': category
+    }
     return render(request, 'shop/index.html', context=data)
 
 
-def feedback(request) -> str:
-    products = Product.objects.all().order_by('category')
-    category = Category.objects.all()
-    data = {'title': 'main page',
-            'products': products,
-            'category': category
-            }
-    return render(request, 'shop/index.html', context=data)
+def feedback(request: HttpResponse) -> str:
+    """
+    :param request:
+    :return: Page with feedback about site, feedback print in log.
+    """
+    user_feedback = []
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback_text = form.cleaned_data['feedback_text']
+            user_feedback.append(feedback_text)
+            print(user_feedback)
+        return redirect('shop:index')
+    else:
+        form = FeedbackForm()
+        data = {'form': form}
+    return render(request, 'shop/feedback.html', context=data)
+
+
+def add_like(request: HttpResponse, product_id: Product.pk) -> str:
+    product = get_object_or_404(Product, pk=product_id)
+    if request.user.is_authenticated:
+        like = Like.objects.filter(post=product, user=request.user).first()
+        if like:
+            like.delete()
+        else:
+            like, created = Like.objects.get_or_create(user=request.user, post=product)
+
+    return redirect('shop:product', product_id=product_id)
