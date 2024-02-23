@@ -3,7 +3,6 @@ async-timeout==4.0.3
 Django==5.0
 django-cors-headers==4.3.1
 django-debug-toolbar==4.3.0
-django-faker==0.2
 django-messages==0.6.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
