@@ -1,0 +1,29 @@
+[
+    {
+        "product_name": "Футболка",
+        "description": "Очень удобная футболка для повседневной носки",
+        "price": 19.99,
+        "category_id": 11,
+        "sale": 0,
+        "is_published": false,
+        "pub_date": "2024-02-23"
+    },
+    {
+        "product_name": "Джинсы",
+        "description": "Классические джинсы высокого качества",
+        "price": 39.99,
+        "category_id": 12,
+        "sale": 0,
+        "is_published": false,
+        "pub_date": "2024-02-23"
+    },
+    {
+        "product_name": "Кроссовки",
+        "description": "Спортивные кроссовки для активного образа жизни",
+        "price": 59.99,
+        "category_id": 13,
+        "sale": 0,
+        "is_published": false,
+        "pub_date": "2024-02-23"
+    }
+]
