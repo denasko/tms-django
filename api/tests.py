@@ -12,7 +12,8 @@ class QuestionViewTest(TestCase):
         self.assertEquals(response.status_code, 200)
 
         data = response.json()
-        self.assertEquals(data, [])
+        self.assertEqual(data['count'], 0)
+        self.assertEqual(data['results'], [])
 
     def test_with_question(self):
         Question.objects.create(question_text='Hello', pub_date=timezone.now())
@@ -22,9 +23,9 @@ class QuestionViewTest(TestCase):
         self.assertEquals(response.status_code, 200)
 
         data = response.json()
-        self.assertEquals(len(data), 2)
-        self.assertEquals(data[0]['question_text'], 'Hello')
-        self.assertEquals(data[1]['question_text'], 'Its me')
+        self.assertEquals(data['count'], 2)
+        self.assertEqual(data['results'][0]['question_text'], 'Hello')
+        self.assertEqual(data['results'][1]['question_text'], 'Its me')
 
     def test_not_really_question(self):
         response = self.client.get(reverse('polls:detail', kwargs={'pk': 1}))
