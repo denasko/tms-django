@@ -72,5 +72,5 @@ class Like(models.Model):
 class Comment(models.Model):
     text = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE,related_name='author')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='product')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
