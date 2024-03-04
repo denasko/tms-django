@@ -16,7 +16,7 @@ class Product(models.Model):
     product_name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     price = models.IntegerField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     sale = models.IntegerField(default=0)
     is_published = models.BooleanField(default=False)
     pub_date = models.DateTimeField('date published')
