@@ -40,7 +40,7 @@ class ChoiceViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def choice_vote(request: Request, question_id: int) -> str:
-    question = get_object_or_404(Question, pk=question_id,publication=True)
+    question = get_object_or_404(Question, pk=question_id, publication=True)
     selected_choice = get_object_or_404(question.choices, id=request.data['choice'])
     selected_choice.votes += 1
     selected_choice.save()
@@ -170,3 +170,15 @@ class CompleteCartView(views.APIView):
                 order.order_entries.create(product=entry.product, count=entry.count)
             profile.shopping_cart.order_entries.all().delete()
 
+
+# ______________________________________________User________________________________________
+
+class RegistrtionUserView(views.APIView):
+    serializer_class = serializers.UserSerializer
+
+    def post(self, request: Request) -> Response:
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

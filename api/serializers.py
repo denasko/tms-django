@@ -69,3 +69,24 @@ class UpdateOrderSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=True)
     remove = serializers.BooleanField(required=False, default=False)
     count = serializers.IntegerField(required=False, default=None, allow_null=True)
+
+
+class UserModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'password2']
+
+
+class UserSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    first_name = serializers.CharField(max_length=20)
+    last_name = serializers.CharField(max_length=20)
+    email = serializers.EmailField()
+    username = serializers.CharField(max_length=30)
+    password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+
+    def create(self, data: dict) -> User:
+        user = User.objects.create_user(username=data["username"], email=data["email"],
+                                        first_name=data["first_name"], last_name=data["last_name"])
+        return user
