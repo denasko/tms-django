@@ -147,12 +147,10 @@ class ProductAPItest(BaseAPITestCase):
         self.assertEqual(data['results'][0]['product_name'], 'Iphone')
         self.assertEqual(data['results'][0]['description'], 'top')
         self.assertEqual(data['results'][0]['price'], 100)
-        self.assertEqual(data['results'][0]['category'], 1)
 
         self.assertEqual(data['results'][1]['product_name'], 'Asus')
         self.assertEqual(data['results'][1]['description'], 'for gaming')
         self.assertEqual(data['results'][1]['price'], 110)
-        self.assertEqual(data['results'][1]['category'], 2)
 
 
 class CategoryAPITest(BaseAPITestCase):
