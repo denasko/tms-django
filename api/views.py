@@ -16,7 +16,7 @@ from . import serializers
 from .filters import MinChoiceCountFilter, MaxChoiceCountFilter, MinArticleTextLength
 from .pagination import DefaultPagination
 from .serializers import QuestionSerializer, ChoiceSerializer, CategorySerializerWithoutProducts, CategorySerializer, \
-    OrderSerializer, UpdateOrderSerializer
+    OrderSerializer, UpdateOrderSerializer, UserModelSerializer
 
 
 # ________________________________Polls________________________________________
@@ -80,18 +80,6 @@ class ProductViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     search_fields = ["id", "name"]
 
 
-# class AddToCartView(views.APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request: Request):
-#         product_id = request.data.get('product_id')
-#         profile = request.user.profile
-#         if not product_id:
-#             return Response(status=status.HTTP_400_BAD_REQUEST)
-#         product = get_object_or_404(Product, id=product_id)
-#         request.user.profile.shopping_cart  # TODO add to cart
-#         return Response(status=status.HTTP_200_OK)
-
 class AddToCartView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -122,6 +110,7 @@ class CartView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request):
+        print(OrderSerializer(request.user.profile.shopping_cart).data)
         return Response(OrderSerializer(request.user.profile.shopping_cart).data)
 
 
@@ -163,12 +152,17 @@ class CompleteCartView(views.APIView):
     @transaction.atomic
     def post(self, request: Request):
         profile = request.user.profile
+        shopping_cart = profile.shopping_cart
         order = Order.objects.create(profile=profile, status=Order.Status.COMPLETED)
-        if profile.shopping_cart.order_entries.exists():
+        if shopping_cart.order_entries.exists():
             entries = profile.shopping_cart.order_entries.all()
             for entry in entries:
                 order.order_entries.create(product=entry.product, count=entry.count)
             profile.shopping_cart.order_entries.all().delete()
+
+            profile.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 # ______________________________________________User________________________________________
@@ -178,7 +172,43 @@ class RegistrtionUserView(views.APIView):
 
     def post(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProfileView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request):
+        return Response(UserModelSerializer(request.user).data)
+
+    def post(self, request: Request):
+        serializer = serializers.UserModelSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid()
+        serializer.save()
+        return Response(data=serializers.UserModelSerializer(request.user).data, status=status.HTTP_200_OK)
+
+
+class LastOrders(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request):
+        user = request.user
+        orders = Order.objects.filter(profile=user.profile).order_by('-id')[:5]
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RepeatOrder(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request, order_id: Order.pk):
+        original_order = Order.objects.get(pk=order_id)
+
+        new_order = Order.objects.create(user=request.user)
+        for entry in original_order.entries.all():
+            OrderEntry.objects.create(order=new_order, product=entry.product, quantity=entry.quantity)
+
+        serializer = OrderSerializer(new_order)
+        return Response(serializer.data)

@@ -53,28 +53,32 @@ class OrderEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderEntry
         fields = '__all__'
-        exclude = ['Product']
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_entryes = OrderEntrySerializer(many=True)
+    order_entries = OrderEntrySerializer(many=True)
 
     class Meta:
         model = Order
         fields = '__all__'
-        exclude = ['Product']
 
 
-class UpdateOrderSerializer(serializers.ModelSerializer):
+class UpdateOrderEntrySerializer(serializers.Serializer):
     id = serializers.IntegerField(required=True)
     remove = serializers.BooleanField(required=False, default=False)
     count = serializers.IntegerField(required=False, default=None, allow_null=True)
 
 
+class UpdateOrderSerializer(serializers.Serializer):
+    clear = serializers.BooleanField(required=False, default=False)
+    order_entries = UpdateOrderEntrySerializer(many=True, required=False, default=[])
+
+
+# __________________________________________________User_______________________________________
 class UserModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'password2']
+        fields = ["first_name", "last_name", "email", "username"]
 
 
 class UserSerializer(serializers.Serializer):
@@ -90,3 +94,15 @@ class UserSerializer(serializers.Serializer):
         user = User.objects.create_user(username=data["username"], email=data["email"],
                                         first_name=data["first_name"], last_name=data["last_name"])
         return user
+
+    def update(self, user: User, data: dict):
+        user.first_name = data.get("first_name", user.first_name)
+        user.last_name = data.get("last_name", user.last_name)
+        user.email = data.get("email", user.email)
+        user.username = data.get("username", user.username)
+
+        user.save()
+        return user
+
+
+

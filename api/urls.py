@@ -25,5 +25,8 @@ urlpatterns = [
     path('cart/', views.CartView.as_view(), name='my_cart'),
     path('cart/update/', views.UpdateCartView.as_view(), name='update_cart'),
     path('complete_order/', views.CompleteCartView.as_view(), name='complete_order'),
+    path('current_user/', views.ProfileView.as_view(), name='current_user'),
+    path('current_user/orders/', views.LastOrders.as_view(), name='current_user_orders'),
+    path('repeat_order/', views.RepeatOrder.as_view(), name='repeat_order'),
 
 ]
