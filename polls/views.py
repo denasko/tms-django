@@ -1,12 +1,21 @@
-from django.utils import timezone
-
 from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
+from django.utils import timezone
 from django.views import generic
+from django_rq import job
+from django.db.models import F
 
 from polls.forms import QuestionForm, FeedbackForm
 from polls.models import Question, Choice
 
 feedback = []
+
+
+@job
+def get_view_count(question: Question):
+    print(f'start {question.view_count}')
+    question.view_count = F('view_count') + 1
+    question.save()
+    print(f'finish {question.view_count}')
 
 
 class IndexView(generic.ListView):
@@ -21,6 +30,11 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Question
     template_name = "polls/detail.html"
+
+    def get(self, request, *args, **kwargs):
+        question = self.get_object()
+        get_view_count.delay(question)
+        return super().get(request, *args, **kwargs)
 
 
 class ResultsView(generic.DetailView):

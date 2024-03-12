@@ -7,6 +7,7 @@ class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published', db_index=True)
     publication = models.BooleanField(default=False)
+    view_count = models.IntegerField(default=0)
     objects: QuerySet
 
     def was_published_recently(self) -> int:

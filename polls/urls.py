@@ -11,5 +11,4 @@ urlpatterns = [
     path('<int:pk>/results', views.ResultsView.as_view(), name='results'),
     path('create_question', views.create_question, name='create_question'),
     path('create_feedback', views.create_feedback, name='create_feedback')
-
 ]
