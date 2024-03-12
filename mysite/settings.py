@@ -32,6 +32,7 @@ ATOMIC_REQUESTS = True
 
 INSTALLED_APPS = [
     # 'debug_toolbar'
+    'django_rq',
     'rest_framework_simplejwt',
     'corsheaders',
     'api',
@@ -160,6 +161,14 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
 }
 
 # INTERNAL_IPS = [
